@@ -1,4 +1,4 @@
-module reconhunter
+module twreconhunter
 
 go 1.23
 

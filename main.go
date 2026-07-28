@@ -18,8 +18,19 @@ func main() {
 	var scopeDomain string
 
 	rootCmd := &cobra.Command{
-		Use:   "reconhunter",
+		Use:   "twreconhunter",
 		Short: "Passive recon and manual review assistant",
+		Long: `TWReconHunter is a passive reconnaissance tool for authorized security testing.
+
+Examples:
+  twreconhunter -u https://example.com --confirm-scope
+  twreconhunter --url https://example.com --confirm-scope --scope-domain example.com
+  twreconhunter update
+
+This tool performs passive checks only. It does not send exploit payloads.
+`,
+		Example: `  twreconhunter -u https://example.com --confirm-scope
+  twreconhunter update`,
 	}
 
 	rootCmd.RunE = func(cmd *cobra.Command, args []string) error {
@@ -66,8 +77,10 @@ func main() {
 
 	var update bool
 	rootCmd.AddCommand(&cobra.Command{
-		Use:   "update",
-		Short: "Download the latest Linux binary from GitHub",
+		Use:     "update",
+		Short:   "Download the latest binary from GitHub",
+		Long:    "Download and install the latest release binary for this platform.",
+		Example: `  twreconhunter update`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runUpdate()
 		},
@@ -95,7 +108,7 @@ func runUpdate() error {
 		return err
 	}
 
-	assetName := "reconhunter"
+	assetName := "twreconhunter"
 	if runtime.GOOS == "windows" {
 		assetName += ".exe"
 	}
@@ -116,7 +129,7 @@ func runUpdate() error {
 		return fmt.Errorf("update download failed with status %d", resp.StatusCode)
 	}
 
-	outPath := filepath.Join(installDir, "reconhunter")
+	outPath := filepath.Join(installDir, "twreconhunter")
 	if runtime.GOOS == "windows" {
 		outPath += ".exe"
 	}
@@ -134,6 +147,6 @@ func runUpdate() error {
 	}
 
 	fmt.Printf("Updated binary installed at %s\n", outPath)
-	fmt.Println("Run: reconhunter -u https://example.com --confirm-scope")
+	fmt.Println("Run: twreconhunter -u https://example.com --confirm-scope")
 	return nil
 }

@@ -39,13 +39,16 @@ chmod +x install.sh
 ## Usage
 
 ```bash
-reconhunter -u https://example.com --confirm-scope
+twreconhunter -h
+twreconhunter -u https://example.com --confirm-scope
+twreconhunter update
 ```
 
-## Update
+## Help and examples
 
 ```bash
-reconhunter update
+twreconhunter --help
+twreconhunter update --help
 ```
 
 ## Example output
