@@ -25,21 +25,27 @@ func main() {
 		Short: "Passive recon and manual review assistant",
 		Long: `TWReconHunter is a passive reconnaissance and manual review assistant for authorized security testing.
 
-Workflow:
+How it works:
   1. Accept a target URL or domain.
   2. Confirm the target is in scope.
-  3. Run passive checks such as header inspection, subdomain hints, and endpoint triage.
-  4. Produce structured findings and optionally export JSON or HTML reports.
+  3. Send a passive request with a standard user-agent and optional research header.
+  4. Inspect response headers, body clues, and endpoint patterns.
+  5. Produce actionable triage suggestions and export JSON or HTML reports.
 
-Examples:
+Common usage:
   twreconhunter -u https://example.com --confirm-scope
   twreconhunter --url https://example.com --confirm-scope --scope-domain example.com
+  twreconhunter -u https://example.com --confirm-scope --research-header your-h1-username
   twreconhunter -u https://example.com --confirm-scope --output-json reports/example.json --output-html reports/example.html
   twreconhunter update
 
-This tool performs passive checks only. It does not send exploit payloads and does not confirm vulnerabilities by injection.
+Important notes:
+  - This tool is passive only. It does not send exploit payloads.
+  - It is intended for authorized testing and responsible research.
+  - Use --research-header only when you have a legitimate reason to identify your testing context.
 `,
 		Example: `  twreconhunter -u https://example.com --confirm-scope
+  twreconhunter -u https://example.com --confirm-scope --research-header your-h1-username
   twreconhunter update`,
 	}
 

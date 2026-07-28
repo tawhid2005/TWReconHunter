@@ -49,11 +49,55 @@ chmod +x install.sh
 
 ## Usage
 
+### Basic scan
+
 ```bash
 twreconhunter -h
 twreconhunter -u https://example.com --confirm-scope
+```
+
+### Scan with an optional research header
+
+Use this only for authorized testing when you want to identify your research context in outbound requests.
+
+```bash
+twreconhunter -u https://example.com --confirm-scope --research-header your-h1-username
+```
+
+### Export reports
+
+```bash
 twreconhunter -u https://example.com --confirm-scope --output-json reports/example.json --output-html reports/example.html
+```
+
+### Update the installed binary
+
+```bash
 twreconhunter update
+```
+
+## What the tool reports
+
+When you run a scan, TWReconHunter will show:
+
+- the target URL and HTTP status
+- discovered passive subdomain hints
+- findings such as missing security headers
+- manual triage suggestions for interesting endpoints
+- optional JSON and HTML reports for documentation
+
+## Example output
+
+```text
+Target: https://example.com
+Status: 200
+
+[Subdomains]
+- No subdomains discovered from passive sources
+
+[Findings]
+[MEDIUM] Missing strict-transport-security
+[MEDIUM] Missing content-security-policy
 ```
 
 ## Example output
