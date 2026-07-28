@@ -104,3 +104,43 @@ func buildParameterHints(endpoint Endpoint) []string {
 	}
 	return hints
 }
+
+func buildReports(findings []Finding, triage []TriageFinding, target string) []ReportNote {
+	reports := []ReportNote{}
+	if len(findings) == 0 && len(triage) == 0 {
+		reports = append(reports, ReportNote{
+			Title:    "No actionable findings identified",
+			Summary:  "The passive review did not surface a clear actionable issue during this scan.",
+			Severity: "Info",
+			Evidence: fmt.Sprintf("Target: %s", target),
+			ReproSteps: []ReproStep{{
+				Step:     "1",
+				Action:   "Review the scan output and export files.",
+				Expected: "The tool should clearly indicate that no actionable issue was identified.",
+				Observed: "The scan completed and reported that no obvious passive issues were detected.",
+			}},
+		})
+		return reports
+	}
+
+	for _, item := range triage {
+		reports = append(reports, ReportNote{
+			Title:    item.Title,
+			Summary:  item.Details,
+			Severity: item.Priority,
+			Evidence: item.URL,
+			ReproSteps: []ReproStep{{
+				Step:     "1",
+				Action:   fmt.Sprintf("Open the suspected endpoint: %s", item.URL),
+				Expected: "The endpoint should be relevant to a sensitive workflow such as auth, admin, or file handling.",
+				Observed: item.Details,
+			}, {
+				Step:     "2",
+				Action:   "Inspect parameters and surrounding application behavior.",
+				Expected: "The endpoint should reveal a manual review candidate for authorization, parameter abuse, or business logic issues.",
+				Observed: "Manual triage should continue from this report entry.",
+			}},
+		})
+	}
+	return reports
+}

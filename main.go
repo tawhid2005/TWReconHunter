@@ -18,6 +18,7 @@ func main() {
 	var scopeDomain string
 	var outputJSON string
 	var outputHTML string
+	var researchHeader string
 
 	rootCmd := &cobra.Command{
 		Use:   "twreconhunter",
@@ -57,7 +58,7 @@ This tool performs passive checks only. It does not send exploit payloads and do
 			fmt.Printf("Scope domain: %s\n", scopeDomain)
 		}
 
-		result, err := runScan(target, scopeDomain)
+		result, err := runScanWithResearchHeader(target, scopeDomain, researchHeader)
 		if err != nil {
 			return err
 		}
@@ -114,6 +115,7 @@ This tool performs passive checks only. It does not send exploit payloads and do
 	rootCmd.Flags().StringVar(&scopeDomain, "scope-domain", "", "Optional in-scope domain")
 	rootCmd.Flags().StringVar(&outputJSON, "output-json", "", "Optional path to write a JSON report")
 	rootCmd.Flags().StringVar(&outputHTML, "output-html", "", "Optional path to write an HTML report")
+	rootCmd.Flags().StringVar(&researchHeader, "research-header", "", "Optional value for X-HackerOne-Research header for authorized testing")
 	rootCmd.Flags().BoolVar(&update, "update", false, "Alias for the update subcommand")
 	_ = update
 

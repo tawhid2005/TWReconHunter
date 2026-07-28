@@ -46,6 +46,11 @@ func renderHTML(result *ScanResult) string {
 		rows += fmt.Sprintf("<tr><td>%s</td><td>%s</td><td>%s</td></tr>", item.Priority, item.Title, item.Details)
 	}
 
+	reportRows := ""
+	for _, note := range result.Reports {
+		reportRows += fmt.Sprintf("<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>", note.Severity, note.Title, note.Summary, note.Evidence)
+	}
+
 	return fmt.Sprintf(`<!doctype html>
 <html>
 <head><meta charset="utf-8"><title>TWReconHunter Report</title></head>
@@ -58,8 +63,13 @@ func renderHTML(result *ScanResult) string {
     <tr><th>Priority</th><th>Title</th><th>Details</th></tr>
     %s
   </table>
+  <h2>Detailed Report Notes</h2>
+  <table>
+    <tr><th>Severity</th><th>Title</th><th>Summary</th><th>Evidence</th></tr>
+    %s
+  </table>
 </body>
-</html>`, result.Target, result.StatusCode, rows)
+</html>`, result.Target, result.StatusCode, rows, reportRows)
 }
 
 func priorityRank(priority string) int {

@@ -25,6 +25,7 @@ TWReconHunter aims to support that workflow with a lightweight CLI tool that is 
 - passive detection of common security header issues
 - P1-to-P5 manual review triage suggestions
 - evidence-based reporting for each finding
+- structured report notes with reproducible validation steps
 - JSON and HTML report export for documentation and follow-up review
 - a clear no-findings outcome when no actionable issue is detected
 

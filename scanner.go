@@ -19,6 +19,7 @@ type ScanResult struct {
 	Findings    []Finding         `json:"findings"`
 	Endpoints   []Endpoint        `json:"endpoints"`
 	Triage      []TriageFinding   `json:"triage"`
+	Reports     []ReportNote      `json:"reports"`
 }
 
 type Finding struct {
@@ -28,6 +29,21 @@ type Finding struct {
 	Source   string `json:"source"`
 }
 
+type ReproStep struct {
+	Step     string `json:"step"`
+	Action   string `json:"action"`
+	Expected string `json:"expected"`
+	Observed string `json:"observed"`
+}
+
+type ReportNote struct {
+	Title      string      `json:"title"`
+	Summary    string      `json:"summary"`
+	Severity   string      `json:"severity"`
+	Evidence   string      `json:"evidence"`
+	ReproSteps []ReproStep `json:"repro_steps"`
+}
+
 type Endpoint struct {
 	URL        string   `json:"url"`
 	Category   string   `json:"category"`
@@ -35,12 +51,17 @@ type Endpoint struct {
 }
 
 func runScan(target string, scopeDomain string) (*ScanResult, error) {
+	return runScanWithResearchHeader(target, scopeDomain, "")
+}
+
+func runScanWithResearchHeader(target string, scopeDomain string, researchHeader string) (*ScanResult, error) {
 	client := &http.Client{Timeout: 8 * time.Second}
 	req, err := http.NewRequest(http.MethodGet, target, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("User-Agent", "TWReconHunter/0.1")
+	applyResearchHeader(req, researchHeader)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -65,6 +86,7 @@ func runScan(target string, scopeDomain string) (*ScanResult, error) {
 	findings := buildFindings(headers, string(body))
 	endpoints := []Endpoint{{URL: target, Category: classifyEndpointCategory(target)}}
 	triage := buildTriageFindings(endpoints, string(body))
+	reports := buildReports(findings, triage, target)
 
 	return &ScanResult{
 		Target:      target,
@@ -75,7 +97,15 @@ func runScan(target string, scopeDomain string) (*ScanResult, error) {
 		Findings:    findings,
 		Endpoints:   endpoints,
 		Triage:      triage,
+		Reports:     reports,
 	}, nil
+}
+
+func applyResearchHeader(req *http.Request, researchHeader string) {
+	if strings.TrimSpace(researchHeader) == "" {
+		return
+	}
+	req.Header.Set("X-HackerOne-Research", strings.TrimSpace(researchHeader))
 }
 
 func extractDomain(raw string) string {
