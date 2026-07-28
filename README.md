@@ -1,13 +1,14 @@
 # TWReconHunter
 
-TWReconHunter is a passive reconnaissance prototype written in Go for authorized security testing and bug bounty workflows.
+TWReconHunter is a passive reconnaissance and manual review assistant written in Go for authorized security testing, bug bounty research, and recon workflows.
 
-It is designed to help an operator quickly understand a target by gathering:
+It helps an operator quickly understand a target by gathering:
 
 - a basic target overview
-- subdomain discovery from passive certificate sources
-- passive findings such as missing security headers
+- passive subdomain discovery hints
+- security header and configuration findings
 - endpoint categories for manual review
+- P1-to-P5 style triage suggestions for follow-up testing
 
 ## Important safety note
 
@@ -18,8 +19,10 @@ This tool is intentionally passive. It does not send exploit payloads or perform
 - Cobra-based CLI
 - URL input with scope confirmation flag
 - passive HTTP probing
-- subdomain discovery through public certificate data
-- structured findings for manual review
+- passive subdomain discovery hints
+- security header and config-based findings
+- manual triage output from P1 to P5
+- JSON and HTML report export
 
 ## Installation
 
@@ -41,6 +44,7 @@ chmod +x install.sh
 ```bash
 twreconhunter -h
 twreconhunter -u https://example.com --confirm-scope
+twreconhunter -u https://example.com --confirm-scope --output-json reports/example.json --output-html reports/example.html
 twreconhunter update
 ```
 
@@ -67,8 +71,10 @@ Status: 200
 
 ## Project structure
 
-- main.go - CLI entry point
+- main.go - CLI entry point and command handling
 - scanner.go - passive scan and recon logic
+- triage.go - P1-to-P5 manual review scoring
+- report.go - JSON and HTML report export
 - main_test.go - basic regression tests
 
 ## License
