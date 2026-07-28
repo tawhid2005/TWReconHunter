@@ -19,6 +19,7 @@ func main() {
 	var outputJSON string
 	var outputHTML string
 	var researchHeader string
+	var deepMode bool
 
 	rootCmd := &cobra.Command{
 		Use:   "twreconhunter",
@@ -36,6 +37,7 @@ Common usage:
   twreconhunter -u https://example.com --confirm-scope
   twreconhunter --url https://example.com --confirm-scope --scope-domain example.com
   twreconhunter -u https://example.com --confirm-scope --research-header your-h1-username
+  twreconhunter -u https://example.com --confirm-scope --deep
   twreconhunter -u https://example.com --confirm-scope --output-json reports/example.json --output-html reports/example.html
   twreconhunter update
 
@@ -43,6 +45,7 @@ Important notes:
   - This tool is passive only. It does not send exploit payloads.
   - It is intended for authorized testing and responsible research.
   - Use --research-header only when you have a legitimate reason to identify your testing context.
+  - Use --deep to add passive endpoint heuristics from page links and common sensitive paths.
 `,
 		Example: `  twreconhunter -u https://example.com --confirm-scope
   twreconhunter -u https://example.com --confirm-scope --research-header your-h1-username
@@ -64,7 +67,7 @@ Important notes:
 			fmt.Printf("Scope domain: %s\n", scopeDomain)
 		}
 
-		result, err := runScanWithResearchHeader(target, scopeDomain, researchHeader)
+		result, err := runScanWithOptions(target, scopeDomain, researchHeader, deepMode)
 		if err != nil {
 			return err
 		}
@@ -122,6 +125,7 @@ Important notes:
 	rootCmd.Flags().StringVar(&outputJSON, "output-json", "", "Optional path to write a JSON report")
 	rootCmd.Flags().StringVar(&outputHTML, "output-html", "", "Optional path to write an HTML report")
 	rootCmd.Flags().StringVar(&researchHeader, "research-header", "", "Optional value for X-HackerOne-Research header for authorized testing")
+	rootCmd.Flags().BoolVar(&deepMode, "deep", false, "Add passive endpoint heuristics from page links and common sensitive paths")
 	rootCmd.Flags().BoolVar(&update, "update", false, "Alias for the update subcommand")
 	_ = update
 

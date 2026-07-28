@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
+	"sort"
 	"strings"
 	"time"
 )
@@ -48,13 +50,18 @@ type Endpoint struct {
 	URL        string   `json:"url"`
 	Category   string   `json:"category"`
 	Parameters []string `json:"parameters,omitempty"`
+	Source     string   `json:"source,omitempty"`
 }
 
 func runScan(target string, scopeDomain string) (*ScanResult, error) {
-	return runScanWithResearchHeader(target, scopeDomain, "")
+	return runScanWithOptions(target, scopeDomain, "", false)
 }
 
 func runScanWithResearchHeader(target string, scopeDomain string, researchHeader string) (*ScanResult, error) {
+	return runScanWithOptions(target, scopeDomain, researchHeader, false)
+}
+
+func runScanWithOptions(target string, scopeDomain string, researchHeader string, deep bool) (*ScanResult, error) {
 	client := &http.Client{Timeout: 8 * time.Second}
 	req, err := http.NewRequest(http.MethodGet, target, nil)
 	if err != nil {
@@ -82,9 +89,10 @@ func runScanWithResearchHeader(target string, scopeDomain string, researchHeader
 	}
 
 	domain := extractDomain(target)
-	subdomains := discoverSubdomains(client, domain)
+	subdomains := discoverSubdomains(client, domain, researchHeader)
 	findings := buildFindings(headers, string(body))
-	endpoints := []Endpoint{{URL: target, Category: classifyEndpointCategory(target)}}
+	endpoints := []Endpoint{{URL: target, Category: classifyEndpointCategory(target), Source: "root"}}
+	endpoints = append(endpoints, discoverPassiveEndpoints(target, string(body), deep)...)
 	triage := buildTriageFindings(endpoints, string(body))
 	reports := buildReports(findings, triage, target)
 
@@ -124,13 +132,14 @@ func extractDomain(raw string) string {
 	return host
 }
 
-func discoverSubdomains(client *http.Client, domain string) []string {
+func discoverSubdomains(client *http.Client, domain string, researchHeader string) []string {
 	if domain == "" {
 		return nil
 	}
 	urlStr := fmt.Sprintf("https://crt.sh/?q=%%%s&output=json", domain)
 	req, _ := http.NewRequest(http.MethodGet, urlStr, nil)
 	req.Header.Set("User-Agent", "TWReconHunter/0.1")
+	applyResearchHeader(req, researchHeader)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil
@@ -166,6 +175,78 @@ func discoverSubdomains(client *http.Client, domain string) []string {
 		}
 	}
 	return result
+}
+
+func discoverPassiveEndpoints(target string, body string, deep bool) []Endpoint {
+	baseURL, err := url.Parse(target)
+	if err != nil {
+		return nil
+	}
+
+	seen := map[string]bool{}
+	var endpoints []Endpoint
+	addEndpoint := func(raw string) {
+		candidate := strings.TrimSpace(raw)
+		if candidate == "" || strings.HasPrefix(candidate, "mailto:") || strings.HasPrefix(candidate, "javascript:") || strings.HasPrefix(candidate, "#") {
+			return
+		}
+		parsed, err := url.Parse(candidate)
+		if err != nil {
+			return
+		}
+		if parsed.IsAbs() {
+			if parsed.Hostname() != baseURL.Hostname() {
+				return
+			}
+			candidate = parsed.String()
+		} else {
+			if parsed.Path == "" {
+				return
+			}
+			joined := baseURL.ResolveReference(parsed)
+			candidate = joined.String()
+		}
+		if seen[candidate] {
+			return
+		}
+		seen[candidate] = true
+		category := classifyEndpointCategory(candidate)
+		params := extractParameters(candidate)
+		endpoints = append(endpoints, Endpoint{URL: candidate, Category: category, Parameters: params, Source: "body"})
+	}
+
+	linkPattern := regexp.MustCompile(`(?i)(?:href|src)=["']([^"']+)["']`)
+	for _, match := range linkPattern.FindAllStringSubmatch(body, -1) {
+		addEndpoint(match[1])
+	}
+
+	if deep {
+		for _, hint := range []string{"/login", "/admin", "/api", "/api/v1", "/dashboard", "/profile", "/upload", "/download", "/forgot-password", "/reset", "/health"} {
+			addEndpoint(baseURL.Scheme + "://" + baseURL.Host + hint)
+		}
+	}
+
+	sort.Slice(endpoints, func(i, j int) bool {
+		return endpoints[i].URL < endpoints[j].URL
+	})
+	return endpoints
+}
+
+func extractParameters(raw string) []string {
+	parsed, err := url.Parse(raw)
+	if err != nil {
+		return nil
+	}
+	values := parsed.Query()
+	if len(values) == 0 {
+		return nil
+	}
+	params := make([]string, 0, len(values))
+	for key := range values {
+		params = append(params, key)
+	}
+	sort.Strings(params)
+	return params
 }
 
 func buildFindings(headers map[string]string, body string) []Finding {

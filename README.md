@@ -64,6 +64,14 @@ Use this only for authorized testing when you want to identify your research con
 twreconhunter -u https://example.com --confirm-scope --research-header your-h1-username
 ```
 
+### Deep passive review
+
+Use the deep mode to add extra passive endpoint hints from page links and common sensitive paths without sending exploit payloads.
+
+```bash
+twreconhunter -u https://example.com --confirm-scope --deep
+```
+
 ### Export reports
 
 ```bash
