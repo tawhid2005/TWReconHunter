@@ -16,18 +16,27 @@ func main() {
 	var target string
 	var confirmScope bool
 	var scopeDomain string
+	var outputJSON string
+	var outputHTML string
 
 	rootCmd := &cobra.Command{
 		Use:   "twreconhunter",
 		Short: "Passive recon and manual review assistant",
-		Long: `TWReconHunter is a passive reconnaissance tool for authorized security testing.
+		Long: `TWReconHunter is a passive reconnaissance and manual review assistant for authorized security testing.
+
+Workflow:
+  1. Accept a target URL or domain.
+  2. Confirm the target is in scope.
+  3. Run passive checks such as header inspection, subdomain hints, and endpoint triage.
+  4. Produce structured findings and optionally export JSON or HTML reports.
 
 Examples:
   twreconhunter -u https://example.com --confirm-scope
   twreconhunter --url https://example.com --confirm-scope --scope-domain example.com
+  twreconhunter -u https://example.com --confirm-scope --output-json reports/example.json --output-html reports/example.html
   twreconhunter update
 
-This tool performs passive checks only. It does not send exploit payloads.
+This tool performs passive checks only. It does not send exploit payloads and does not confirm vulnerabilities by injection.
 `,
 		Example: `  twreconhunter -u https://example.com --confirm-scope
   twreconhunter update`,
@@ -71,6 +80,20 @@ This tool performs passive checks only. It does not send exploit payloads.
 		for _, endpoint := range result.Endpoints {
 			fmt.Printf("- %s [%s]\n", endpoint.URL, endpoint.Category)
 		}
+		fmt.Println("\n[Manual Triage]")
+		if len(result.Triage) == 0 {
+			fmt.Println("- No high-priority manual review candidates detected")
+		} else {
+			for _, item := range result.Triage {
+				fmt.Printf("[%s] %s - %s\n", item.Priority, item.Title, item.Details)
+				if item.URL != "" {
+					fmt.Printf("    URL: %s\n", item.URL)
+				}
+			}
+		}
+		if err := writeReport(result, outputJSON, outputHTML); err != nil {
+			return err
+		}
 		fmt.Println("\nPassive scan completed.")
 		return nil
 	}
@@ -89,6 +112,8 @@ This tool performs passive checks only. It does not send exploit payloads.
 	rootCmd.Flags().StringVarP(&target, "url", "u", "", "Target URL or domain")
 	rootCmd.Flags().BoolVar(&confirmScope, "confirm-scope", false, "Confirm that the target is authorized for testing")
 	rootCmd.Flags().StringVar(&scopeDomain, "scope-domain", "", "Optional in-scope domain")
+	rootCmd.Flags().StringVar(&outputJSON, "output-json", "", "Optional path to write a JSON report")
+	rootCmd.Flags().StringVar(&outputHTML, "output-html", "", "Optional path to write an HTML report")
 	rootCmd.Flags().BoolVar(&update, "update", false, "Alias for the update subcommand")
 	_ = update
 

@@ -2,7 +2,7 @@
 
 TWReconHunter is a passive reconnaissance tool written in Go for authorized security testing, bug bounty research, and web application assessment workflows.
 
-It is designed to help security researchers quickly gather reconnaissance data, identify low-severity configuration issues, and prioritize manual review for high-value targets. The project focuses on a safe, passive workflow and is intended for authorized testing only.
+It is designed to help security researchers quickly gather reconnaissance data, identify low-severity configuration issues, and prioritize manual review for high-value targets. The tool produces structured findings with evidence sources, exports JSON or HTML reports, and ends with a professional no-findings summary when nothing actionable is discovered.
 
 ## Why this project exists
 
@@ -24,7 +24,9 @@ TWReconHunter aims to support that workflow with a lightweight CLI tool that is 
 - HTTP response and header-based checks
 - passive detection of common security header issues
 - P1-to-P5 manual review triage suggestions
+- evidence-based reporting for each finding
 - JSON and HTML report export for documentation and follow-up review
+- a clear no-findings outcome when no actionable issue is detected
 
 ## Installation
 

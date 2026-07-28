@@ -18,12 +18,14 @@ type ScanResult struct {
 	Subdomains  []string          `json:"subdomains"`
 	Findings    []Finding         `json:"findings"`
 	Endpoints   []Endpoint        `json:"endpoints"`
+	Triage      []TriageFinding   `json:"triage"`
 }
 
 type Finding struct {
 	Severity string `json:"severity"`
 	Title    string `json:"title"`
 	Details  string `json:"details"`
+	Source   string `json:"source"`
 }
 
 type Endpoint struct {
@@ -62,6 +64,7 @@ func runScan(target string, scopeDomain string) (*ScanResult, error) {
 	subdomains := discoverSubdomains(client, domain)
 	findings := buildFindings(headers, string(body))
 	endpoints := []Endpoint{{URL: target, Category: classifyEndpointCategory(target)}}
+	triage := buildTriageFindings(endpoints, string(body))
 
 	return &ScanResult{
 		Target:      target,
@@ -71,6 +74,7 @@ func runScan(target string, scopeDomain string) (*ScanResult, error) {
 		Subdomains:  subdomains,
 		Findings:    findings,
 		Endpoints:   endpoints,
+		Triage:      triage,
 	}, nil
 }
 
@@ -139,17 +143,17 @@ func buildFindings(headers map[string]string, body string) []Finding {
 	lowerBody := strings.ToLower(body)
 	for _, header := range []string{"strict-transport-security", "content-security-policy", "x-frame-options"} {
 		if strings.ToLower(headers[header]) == "" {
-			findings = append(findings, Finding{Severity: "medium", Title: fmt.Sprintf("Missing %s", header), Details: fmt.Sprintf("The response does not include %s.", header)})
+			findings = append(findings, Finding{Severity: "medium", Title: fmt.Sprintf("Missing %s", header), Details: fmt.Sprintf("The response does not include %s.", header), Source: "response header"})
 		}
 	}
 	if strings.Contains(lowerBody, "index of /") || strings.Contains(lowerBody, "directory listing") {
-		findings = append(findings, Finding{Severity: "medium", Title: "Directory listing enabled", Details: "The server appears to expose directory contents."})
+		findings = append(findings, Finding{Severity: "medium", Title: "Directory listing enabled", Details: "The server appears to expose directory contents.", Source: "response body"})
 	}
 	if strings.Contains(lowerBody, "exception") || strings.Contains(lowerBody, "traceback") || strings.Contains(lowerBody, "stack trace") {
-		findings = append(findings, Finding{Severity: "low", Title: "Verbose error leak", Details: "The response body exposes error details."})
+		findings = append(findings, Finding{Severity: "low", Title: "Verbose error leak", Details: "The response body exposes error details.", Source: "response body"})
 	}
 	if len(findings) == 0 {
-		findings = append(findings, Finding{Severity: "info", Title: "No obvious passive issues detected", Details: "Only passive checks were run."})
+		findings = append(findings, Finding{Severity: "info", Title: "No obvious passive issues detected", Details: "No actionable findings were identified during this passive review. The tool will continue testing other relevant sources if available.", Source: "passive scan"})
 	}
 	return findings
 }
