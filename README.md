@@ -1,58 +1,81 @@
 # TWReconHunter
 
-TWReconHunter is a passive reconnaissance tool written in Go for authorized security testing, bug bounty research, and web application assessment workflows.
+TWReconHunter is a lightweight Go-based recon and triage tool for authorized security testing, bug bounty research, and web application review.
 
-It is designed to help security researchers quickly gather reconnaissance data, identify low-severity configuration issues, and prioritize manual review for high-value targets. The tool produces structured findings with evidence sources, exports JSON or HTML reports, and ends with a professional no-findings summary when nothing actionable is discovered.
+It is designed to help researchers quickly gather reconnaissance clues, identify interesting surfaces, and prioritize likely bug bounty targets without turning into an exploit framework.
 
 ## Why this project exists
 
-Security teams and bug bounty hunters often need a fast way to:
+Security researchers often need a fast and professional workflow to:
 
 - understand a target domain and its exposed surface
-- collect passive recon hints from public sources
+- discover likely links, parameters, and subdomain hints
 - identify common security misconfigurations
 - prioritize interesting endpoints for manual review
-- export results into structured report formats
+- export structured reports for documentation and handoff
 
-TWReconHunter aims to support that workflow with a lightweight CLI tool that is easy to install and run on Linux systems.
+TWReconHunter aims to support that workflow with a simple CLI that is easy to install and run.
 
 ## Key features
 
 - passive recon for target URLs and domains
-- scope confirmation workflow before scanning
-- basic subdomain discovery hints
-- HTTP response and header-based checks
-- passive detection of common security header issues
-- P1-to-P5 manual review triage suggestions
-- evidence-based reporting for each finding
-- structured report notes with reproducible validation steps
-- JSON and HTML report export for documentation and follow-up review
-- a clear no-findings outcome when no actionable issue is detected
+- one-command active-style recon workflow via the active subcommand
+- link and parameter discovery from a starting URL
+- candidate scoring for admin, login, upload, API, and sensitive paths
+- optional research header support for authorized testing
+- JSON and HTML report export
+- P1-to-P5 style triage suggestions for manual review
 
 ## Installation
 
-### Clone and build from source
+### Clone the repository
 
 ```bash
 git clone https://github.com/tawhid2005/TWReconHunter.git
-cd TWReconHunter/go-reconhunter
-go mod tidy
-go build .
+cd TWReconHunter
 ```
 
-### Linux install from GitHub
+### Build from source
+
+```bash
+cd go-reconhunter
+go mod tidy
+go build -o twreconhunter .
+```
+
+### Linux install helper
 
 ```bash
 chmod +x install.sh
 ./install.sh
 ```
 
-## Usage
+If the command is not found after installation, add the local bin directory to your shell startup file:
 
-### Basic scan
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Then run:
 
 ```bash
 twreconhunter -h
+twreconhunter active -u https://example.com --confirm-scope
+```
+
+## Usage
+
+### One-command recon workflow
+
+This is the recommended starting point for a fast recon and triage run.
+
+```bash
+twreconhunter active -u https://example.com --confirm-scope
+```
+
+### Passive scan
+
+```bash
 twreconhunter -u https://example.com --confirm-scope
 ```
 
@@ -65,8 +88,6 @@ twreconhunter -u https://example.com --confirm-scope --research-header your-h1-u
 ```
 
 ### Deep passive review
-
-Use the deep mode to add extra passive endpoint hints from page links and common sensitive paths without sending exploit payloads.
 
 ```bash
 twreconhunter -u https://example.com --confirm-scope --deep
@@ -86,40 +107,23 @@ twreconhunter update
 
 ## What the tool reports
 
-When you run a scan, TWReconHunter will show:
+When you run a scan, TWReconHunter can show:
 
-- the target URL and HTTP status
-- discovered passive subdomain hints
-- findings such as missing security headers
-- manual triage suggestions for interesting endpoints
+- the starting target URL and status
+- discovered links and parameters
+- likely subdomain hints
+- candidate paths that look like high-value bug bounty surfaces
+- triage suggestions such as admin, login, upload, or API review areas
 - optional JSON and HTML reports for documentation
 
 ## Example output
 
 ```text
-Target: https://example.com
-Status: 200
-
-[Subdomains]
-- No subdomains discovered from passive sources
-
-[Findings]
-[MEDIUM] Missing strict-transport-security
-[MEDIUM] Missing content-security-policy
-```
-
-## Example output
-
-```text
-Target: https://example.com
-Status: 200
-
-[Subdomains]
-- No subdomains discovered from passive sources
-
-[Findings]
-[MEDIUM] Missing strict-transport-security
-[MEDIUM] Missing content-security-policy
+Warning: this active mode sends test requests and should only be used on authorized targets.
+Active scan results for https://example.com
+Discovered links: 2
+Parameters:
+No findings from the initial active checks
 ```
 
 ## Project structure
@@ -128,11 +132,12 @@ Status: 200
 - scanner.go - passive scan and recon logic
 - triage.go - P1-to-P5 manual review scoring
 - report.go - JSON and HTML report export
-- main_test.go - basic regression tests
+- active.go - active-style recon workflow and candidate scoring
+- main_test.go - regression tests
 
 ## Safety and ethics
 
-TWReconHunter is intentionally passive. It does not send exploit payloads or perform active exploitation. It is meant for authorized testing only and should be used responsibly.
+TWReconHunter is intentionally passive by default and uses a lightweight active-style workflow only for safe reconnaissance and review guidance. It does not send exploit payloads or perform destructive actions. It is meant for authorized testing only and should be used responsibly.
 
 ## License
 

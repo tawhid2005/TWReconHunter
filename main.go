@@ -20,6 +20,7 @@ func main() {
 	var outputHTML string
 	var researchHeader string
 	var deepMode bool
+	var customHeaders []string
 
 	rootCmd := &cobra.Command{
 		Use:   "twreconhunter",
@@ -29,11 +30,12 @@ func main() {
 How it works:
   1. Accept a target URL or domain.
   2. Confirm the target is in scope.
-  3. Send a passive request with a standard user-agent and optional research header.
-  4. Inspect response headers, body clues, and endpoint patterns.
+  3. Discover candidate links, parameters, and likely subdomain hints.
+  4. Score the most interesting bug bounty surfaces automatically.
   5. Produce actionable triage suggestions and export JSON or HTML reports.
 
 Common usage:
+  twreconhunter active -u https://example.com --confirm-scope
   twreconhunter -u https://example.com --confirm-scope
   twreconhunter --url https://example.com --confirm-scope --scope-domain example.com
   twreconhunter -u https://example.com --confirm-scope --research-header your-h1-username
@@ -46,8 +48,9 @@ Important notes:
   - It is intended for authorized testing and responsible research.
   - Use --research-header only when you have a legitimate reason to identify your testing context.
   - Use --deep to add passive endpoint heuristics from page links and common sensitive paths.
+  - Use the active subcommand for a one-shot recon-to-triage workflow.
 `,
-		Example: `  twreconhunter -u https://example.com --confirm-scope
+		Example: `  twreconhunter active -u https://example.com --confirm-scope
   twreconhunter -u https://example.com --confirm-scope --research-header your-h1-username
   twreconhunter update`,
 	}
@@ -58,20 +61,23 @@ Important notes:
 		}
 
 		if !confirmScope {
-			fmt.Println("Authorization warning: confirm that this target is in scope before proceeding.")
-			return nil
+			fmt.Println("Error: You must provide --confirm-scope to confirm the target is authorized.")
+			os.Exit(1)
 		}
 
-		fmt.Printf("Target: %s\n", target)
-		if scopeDomain != "" {
-			fmt.Printf("Scope domain: %s\n", scopeDomain)
+		fmt.Printf("Starting passive scan against: %s\n", target)
+		if len(customHeaders) > 0 {
+			fmt.Printf("Using %d custom headers\n", len(customHeaders))
+		}
+		if deepMode {
+			fmt.Println("Deep passive enumeration enabled.")
 		}
 
-		result, err := runScanWithOptions(target, scopeDomain, researchHeader, deepMode)
+		result, err := runScanWithOptions(target, scopeDomain, researchHeader, customHeaders, deepMode)
 		if err != nil {
-			return err
+			fmt.Printf("Error scanning target: %v\n", err)
+			os.Exit(1)
 		}
-
 		fmt.Printf("Status: %d\n", result.StatusCode)
 		fmt.Printf("Headers: %d\n", len(result.Headers))
 		fmt.Println("\n[Subdomains]")
@@ -109,6 +115,41 @@ Important notes:
 	}
 
 	var update bool
+	activeCmd := &cobra.Command{
+		Use:     "active",
+		Short:   "Run the active MVP scanner against a target",
+		Long:    "Run an initial active scan that discovers links and parameters, then checks a small set of high-signal bug classes such as open redirect and reflected content.",
+		Example: `  twreconhunter active -u https://example.com`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if target == "" {
+				return fmt.Errorf("target URL is required")
+			}
+			if !confirmScope {
+				return fmt.Errorf("you must provide --confirm-scope before running active checks")
+			}
+			fmt.Println("Warning: this active mode sends test requests and should only be used on authorized targets.")
+			result, err := runActiveScan(ActiveScanOptions{Target: target, Depth: 1})
+			if err != nil {
+				return err
+			}
+			fmt.Printf("Active scan results for %s\n", result.Target)
+			fmt.Printf("Discovered links: %d\n", len(result.Discovered))
+			fmt.Printf("Parameters: %s\n", strings.Join(result.Params, ", "))
+			if len(result.Findings) == 0 {
+				fmt.Println("No findings from the initial active checks")
+				return nil
+			}
+			fmt.Println("Findings:")
+			for _, finding := range result.Findings {
+				fmt.Printf("[%s] %s - %s\n", finding.Severity, finding.Title, finding.Detail)
+			}
+			return nil
+		},
+	}
+	activeCmd.Flags().StringVarP(&target, "url", "u", "", "Target URL to scan")
+	activeCmd.Flags().BoolVar(&confirmScope, "confirm-scope", false, "Confirm that the target is authorized for testing")
+	rootCmd.AddCommand(activeCmd)
+
 	rootCmd.AddCommand(&cobra.Command{
 		Use:     "update",
 		Short:   "Download the latest binary from GitHub",
@@ -126,6 +167,7 @@ Important notes:
 	rootCmd.Flags().StringVar(&outputHTML, "output-html", "", "Optional path to write an HTML report")
 	rootCmd.Flags().StringVar(&researchHeader, "research-header", "", "Optional value for X-HackerOne-Research header for authorized testing")
 	rootCmd.Flags().BoolVar(&deepMode, "deep", false, "Add passive endpoint heuristics from page links and common sensitive paths")
+	rootCmd.Flags().StringArrayVarP(&customHeaders, "header", "H", nil, "Custom headers (e.g., -H 'Authorization: Bearer token')")
 	rootCmd.Flags().BoolVar(&update, "update", false, "Alias for the update subcommand")
 	_ = update
 

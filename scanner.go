@@ -54,21 +54,21 @@ type Endpoint struct {
 }
 
 func runScan(target string, scopeDomain string) (*ScanResult, error) {
-	return runScanWithOptions(target, scopeDomain, "", false)
+	return runScanWithOptions(target, scopeDomain, "", nil, false)
 }
 
 func runScanWithResearchHeader(target string, scopeDomain string, researchHeader string) (*ScanResult, error) {
-	return runScanWithOptions(target, scopeDomain, researchHeader, false)
+	return runScanWithOptions(target, scopeDomain, researchHeader, nil, false)
 }
 
-func runScanWithOptions(target string, scopeDomain string, researchHeader string, deep bool) (*ScanResult, error) {
+func runScanWithOptions(target string, scopeDomain string, researchHeader string, customHeaders []string, deep bool) (*ScanResult, error) {
 	client := &http.Client{Timeout: 8 * time.Second}
 	req, err := http.NewRequest(http.MethodGet, target, nil)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "TWReconHunter/0.1")
-	applyResearchHeader(req, researchHeader)
+	req.Header.Set("User-Agent", "TWReconHunter/0.2")
+	applyHeaders(req, researchHeader, customHeaders)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -89,7 +89,7 @@ func runScanWithOptions(target string, scopeDomain string, researchHeader string
 	}
 
 	domain := extractDomain(target)
-	subdomains := discoverSubdomains(client, domain, researchHeader)
+	subdomains := discoverSubdomains(client, domain, researchHeader, customHeaders)
 	findings := buildFindings(headers, string(body))
 	endpoints := []Endpoint{{URL: target, Category: classifyEndpointCategory(target), Source: "root"}}
 	endpoints = append(endpoints, discoverPassiveEndpoints(target, string(body), deep)...)
@@ -107,6 +107,18 @@ func runScanWithOptions(target string, scopeDomain string, researchHeader string
 		Triage:      triage,
 		Reports:     reports,
 	}, nil
+}
+
+func applyHeaders(req *http.Request, researchHeader string, customHeaders []string) {
+	if strings.TrimSpace(researchHeader) != "" {
+		req.Header.Set("X-HackerOne-Research", strings.TrimSpace(researchHeader))
+	}
+	for _, h := range customHeaders {
+		parts := strings.SplitN(h, ":", 2)
+		if len(parts) == 2 {
+			req.Header.Set(strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1]))
+		}
+	}
 }
 
 func applyResearchHeader(req *http.Request, researchHeader string) {
@@ -132,47 +144,107 @@ func extractDomain(raw string) string {
 	return host
 }
 
-func discoverSubdomains(client *http.Client, domain string, researchHeader string) []string {
+func discoverSubdomains(client *http.Client, domain string, researchHeader string, customHeaders []string) []string {
 	if domain == "" {
 		return nil
 	}
-	urlStr := fmt.Sprintf("https://crt.sh/?q=%%%s&output=json", domain)
-	req, _ := http.NewRequest(http.MethodGet, urlStr, nil)
-	req.Header.Set("User-Agent", "TWReconHunter/0.1")
-	applyResearchHeader(req, researchHeader)
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil
-	}
-	defer resp.Body.Close()
 
-	body, err := io.ReadAll(io.LimitReader(resp.Body, 20000))
-	if err != nil {
-		return nil
-	}
+	resultCh := make(chan []string, 3)
 
-	var records []map[string]any
-	if err := json.Unmarshal(body, &records); err != nil {
-		return nil
-	}
-
-	seen := map[string]bool{}
-	var result []string
-	for _, record := range records {
-		if nameValue, ok := record["name_value"].(string); ok {
-			for _, part := range strings.Split(nameValue, "\n") {
-				clean := strings.TrimSpace(part)
-				if clean == "" {
-					continue
-				}
-				if strings.HasSuffix(clean, "."+domain) || clean == domain {
-					if !seen[clean] {
-						seen[clean] = true
-						result = append(result, clean)
+	// Fetch from crt.sh
+	go func() {
+		var res []string
+		urlStr := fmt.Sprintf("https://crt.sh/?q=%%%s&output=json", domain)
+		req, _ := http.NewRequest(http.MethodGet, urlStr, nil)
+		req.Header.Set("User-Agent", "TWReconHunter/0.2")
+		applyHeaders(req, researchHeader, customHeaders)
+		if resp, err := client.Do(req); err == nil {
+			if body, err := io.ReadAll(io.LimitReader(resp.Body, 50000)); err == nil {
+				var records []map[string]any
+				if json.Unmarshal(body, &records) == nil {
+					for _, record := range records {
+						if nameValue, ok := record["name_value"].(string); ok {
+							for _, part := range strings.Split(nameValue, "\n") {
+								res = append(res, strings.TrimSpace(part))
+							}
+						}
 					}
 				}
 			}
+			resp.Body.Close()
 		}
+		resultCh <- res
+	}()
+
+	// Fetch from HackerTarget
+	go func() {
+		var res []string
+		urlStr := fmt.Sprintf("https://api.hackertarget.com/hostsearch/?q=%s", domain)
+		req, _ := http.NewRequest(http.MethodGet, urlStr, nil)
+		req.Header.Set("User-Agent", "TWReconHunter/0.2")
+		applyHeaders(req, researchHeader, customHeaders)
+		if resp, err := client.Do(req); err == nil {
+			if body, err := io.ReadAll(io.LimitReader(resp.Body, 50000)); err == nil {
+				text := string(body)
+				if !strings.Contains(strings.ToLower(text), "error") {
+					for _, line := range strings.Split(text, "\n") {
+						parts := strings.Split(line, ",")
+						if len(parts) > 0 {
+							res = append(res, strings.TrimSpace(parts[0]))
+						}
+					}
+				}
+			}
+			resp.Body.Close()
+		}
+		resultCh <- res
+	}()
+
+	// Fetch from AlienVault OTX
+	go func() {
+		var res []string
+		urlStr := fmt.Sprintf("https://otx.alienvault.com/api/v1/indicators/domain/%s/passive_dns", domain)
+		req, _ := http.NewRequest(http.MethodGet, urlStr, nil)
+		req.Header.Set("User-Agent", "TWReconHunter/0.2")
+		applyHeaders(req, researchHeader, customHeaders)
+		if resp, err := client.Do(req); err == nil {
+			if body, err := io.ReadAll(io.LimitReader(resp.Body, 50000)); err == nil {
+				var data struct {
+					PassiveDNS []struct {
+						Hostname string `json:"hostname"`
+					} `json:"passive_dns"`
+				}
+				if json.Unmarshal(body, &data) == nil {
+					for _, record := range data.PassiveDNS {
+						res = append(res, strings.TrimSpace(record.Hostname))
+					}
+				}
+			}
+			resp.Body.Close()
+		}
+		resultCh <- res
+	}()
+
+	seen := map[string]bool{}
+	var result []string
+
+	for i := 0; i < 3; i++ {
+		names := <-resultCh
+		for _, clean := range names {
+			if clean == "" {
+				continue
+			}
+			if strings.HasSuffix(clean, "."+domain) || clean == domain {
+				if !seen[clean] {
+					seen[clean] = true
+					result = append(result, clean)
+				}
+			}
+		}
+	}
+
+	if len(result) > 50 {
+		return result[:50]
 	}
 	return result
 }
@@ -217,6 +289,12 @@ func discoverPassiveEndpoints(target string, body string, deep bool) []Endpoint 
 
 	linkPattern := regexp.MustCompile(`(?i)(?:href|src)=["']([^"']+)["']`)
 	for _, match := range linkPattern.FindAllStringSubmatch(body, -1) {
+		addEndpoint(match[1])
+	}
+
+	// JS Endpoint Extraction
+	jsPattern := regexp.MustCompile(`['"](/api/[^'"\s]+|/v[1-9]/[^'"\s]+|/users/[^'"\s]+|/[a-zA-Z0-9_.-]+\.json)['"]`)
+	for _, match := range jsPattern.FindAllStringSubmatch(body, -1) {
 		addEndpoint(match[1])
 	}
 
