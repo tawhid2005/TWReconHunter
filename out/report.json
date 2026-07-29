@@ -1,0 +1,52 @@
+{
+  "target": "example.com",
+  "scope_validation": {
+    "confirmed": true,
+    "scope_domain": null,
+    "in_scope": true,
+    "message": "Scope confirmed by the operator."
+  },
+  "inventory": [
+    {
+      "host": "example.com",
+      "alive": true,
+      "tech": []
+    }
+  ],
+  "endpoints": [],
+  "findings": [
+    {
+      "severity": "medium",
+      "title": "Missing strict-transport-security",
+      "details": "The response does not include the strict-transport-security header."
+    },
+    {
+      "severity": "medium",
+      "title": "Missing content-security-policy",
+      "details": "The response does not include the content-security-policy header."
+    },
+    {
+      "severity": "medium",
+      "title": "Missing x-frame-options",
+      "details": "The response does not include the x-frame-options header."
+    },
+    {
+      "severity": "info",
+      "title": "Authorization scope confirmation required",
+      "details": "Confirm that this target is in scope before real testing."
+    }
+  ],
+  "manual_review": {
+    "categories": {
+      "auth_related": [],
+      "user_data_related": [],
+      "file_upload_related": [],
+      "other": []
+    },
+    "parameterized_endpoints": [],
+    "forms": []
+  },
+  "notes": [
+    "Passive-only checks. No exploit payloads were sent."
+  ]
+}

@@ -1,0 +1,513 @@
+{
+  "target": "hackerone.com",
+  "scope_validation": {
+    "confirmed": true,
+    "scope_domain": null,
+    "in_scope": true,
+    "message": "Scope confirmed by the operator."
+  },
+  "inventory": [
+    {
+      "host": "a.ns.hackerone.com",
+      "alive": true,
+      "tech": []
+    },
+    {
+      "host": "mta-sts.forwarding.hackerone.com",
+      "alive": true,
+      "tech": []
+    },
+    {
+      "host": "b.ns.hackerone.com",
+      "alive": true,
+      "tech": []
+    },
+    {
+      "host": "www.hackerone.com",
+      "alive": true,
+      "tech": []
+    },
+    {
+      "host": "gslink.hackerone.com",
+      "alive": true,
+      "tech": []
+    },
+    {
+      "host": "mta-sts.hackerone.com",
+      "alive": true,
+      "tech": []
+    },
+    {
+      "host": "mta-sts.managed.hackerone.com",
+      "alive": true,
+      "tech": []
+    },
+    {
+      "host": "api.hackerone.com",
+      "alive": true,
+      "tech": []
+    },
+    {
+      "host": "hackerone.com",
+      "alive": true,
+      "tech": [
+        "jquery"
+      ]
+    },
+    {
+      "host": "docs.hackerone.com",
+      "alive": true,
+      "tech": []
+    },
+    {
+      "host": "support.hackerone.com",
+      "alive": true,
+      "tech": []
+    }
+  ],
+  "endpoints": [
+    {
+      "url": "https://hackerone.com/sites/default/files/js/js_7gNnZ5WRF8iu0xHlUQ1fRJeJMvrryhO5pKbIadqb6o8.js?scope=header&delta=0&language=en&theme=hackerone&include=eJxdz2EOgjAMBeALORZPtLxBLZVtJaMg3F6iJk7_NHnfa5qUdktSJj_UdUbq6B0vrMqJgoE9n-M_d7hj_8V8GdFPVLWQ56QRyS19ldmWphivGXUi08Zm2HhDb1oPpxvVhKNpjRaTrEWQ2kMbkgww0dLgQ85dOKxVK74ekKNQsRA5bDKQ-g-4yO4FzpTPT56krmgl",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/modules/contrib/google_tag/js/gtag.js?tip1e4",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/modules/contrib/google_tag/js/gtm.js?tip1e4",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/#main-content",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/product/h1-remediation",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/users/sign_in",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/leaderboard",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/contact/security-incident",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/platform",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/platform/hai",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/product/bug-bounty-platform",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/product/pentest",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/product/h1-continuous-testing",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/product/ai-red-teaming",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/product/h1-validation",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/adversarial-exposure-validation",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/ai",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/application-security-testing-software",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/cloud-security-solution",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/continuous-security-testing",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/continuous-vulnerability-testing",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/crowdsourced-security",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/continuous-threat-exposure-management",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/vulnerability-management-system",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/web3",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/automotive-and-transportation",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/crypto-blockchain",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/financial-services",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/public-sector",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/healthcare",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/retail-ecommerce",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/retail-hospitality-and-entertainment",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/united-states-federal",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/solutions/uk-government",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/report/future-of-ai",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/partners",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/partners/technology-alliance-program",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/partners/aws",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/partners/find-a-partner",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/partners/integrations",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/hackers",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/hackers/how-to-start-hacking",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/hackers/ambassador-world-cup",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/opportunities/all",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/report/hacker-powered-security",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/events",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/blog",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/vulnerability-disclosure-policy-map",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/company",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/company/leadership",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/careers",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/trust",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/company/public-policy",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/company/newsroom",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/contact",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/#wistia_z2movi2qn0",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/knowledge-center/what-application-security-concepts-tools-best-practices",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/knowledge-center/what-is-penetration-testing-as-a-service",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/knowledge-center/what-hacking-black-hat-white-hat-blue-hat-and-more",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/knowledge-center/16-types-cybersecurity-attacks-and-how-prevent-them",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/resources",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/policies",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/terms",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/policies/privacy",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/security?type=team",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/core/assets/vendor/jquery/jquery.min.js?v=4.0.0",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/sites/default/files/js/js_jjHoXB9hNlkMA0KFw6SH5-JfpXWAPGPreQ9_53BCLI4.js?scope=footer&delta=1&language=en&theme=hackerone&include=eJxdz2EOgjAMBeALORZPtLxBLZVtJaMg3F6iJk7_NHnfa5qUdktSJj_UdUbq6B0vrMqJgoE9n-M_d7hj_8V8GdFPVLWQ56QRyS19ldmWphivGXUi08Zm2HhDb1oPpxvVhKNpjRaTrEWQ2kMbkgww0dLgQ85dOKxVK74ekKNQsRA5bDKQ-g-4yO4FzpTPT56krmgl",
+      "method": "GET",
+      "parameters": []
+    },
+    {
+      "url": "https://hackerone.com/sites/default/files/js/js_q278e2vWZDd9G59RWht2shOHNvp3P7QNTCMYb9-Jihs.js?scope=footer&delta=3&language=en&theme=hackerone&include=eJxdz2EOgjAMBeALORZPtLxBLZVtJaMg3F6iJk7_NHnfa5qUdktSJj_UdUbq6B0vrMqJgoE9n-M_d7hj_8V8GdFPVLWQ56QRyS19ldmWphivGXUi08Zm2HhDb1oPpxvVhKNpjRaTrEWQ2kMbkgww0dLgQ85dOKxVK74ekKNQsRA5bDKQ-g-4yO4FzpTPT56krmgl",
+      "method": "GET",
+      "parameters": []
+    }
+  ],
+  "findings": [
+    {
+      "severity": "info",
+      "title": "Authorization scope confirmation required",
+      "details": "Confirm that this target is in scope before real testing."
+    }
+  ],
+  "manual_review": {
+    "categories": {
+      "auth_related": [],
+      "user_data_related": [
+        "https://hackerone.com/users/sign_in"
+      ],
+      "file_upload_related": [
+        "https://hackerone.com/sites/default/files/js/js_7gNnZ5WRF8iu0xHlUQ1fRJeJMvrryhO5pKbIadqb6o8.js?scope=header&delta=0&language=en&theme=hackerone&include=eJxdz2EOgjAMBeALORZPtLxBLZVtJaMg3F6iJk7_NHnfa5qUdktSJj_UdUbq6B0vrMqJgoE9n-M_d7hj_8V8GdFPVLWQ56QRyS19ldmWphivGXUi08Zm2HhDb1oPpxvVhKNpjRaTrEWQ2kMbkgww0dLgQ85dOKxVK74ekKNQsRA5bDKQ-g-4yO4FzpTPT56krmgl",
+        "https://hackerone.com/sites/default/files/js/js_jjHoXB9hNlkMA0KFw6SH5-JfpXWAPGPreQ9_53BCLI4.js?scope=footer&delta=1&language=en&theme=hackerone&include=eJxdz2EOgjAMBeALORZPtLxBLZVtJaMg3F6iJk7_NHnfa5qUdktSJj_UdUbq6B0vrMqJgoE9n-M_d7hj_8V8GdFPVLWQ56QRyS19ldmWphivGXUi08Zm2HhDb1oPpxvVhKNpjRaTrEWQ2kMbkgww0dLgQ85dOKxVK74ekKNQsRA5bDKQ-g-4yO4FzpTPT56krmgl",
+        "https://hackerone.com/sites/default/files/js/js_q278e2vWZDd9G59RWht2shOHNvp3P7QNTCMYb9-Jihs.js?scope=footer&delta=3&language=en&theme=hackerone&include=eJxdz2EOgjAMBeALORZPtLxBLZVtJaMg3F6iJk7_NHnfa5qUdktSJj_UdUbq6B0vrMqJgoE9n-M_d7hj_8V8GdFPVLWQ56QRyS19ldmWphivGXUi08Zm2HhDb1oPpxvVhKNpjRaTrEWQ2kMbkgww0dLgQ85dOKxVK74ekKNQsRA5bDKQ-g-4yO4FzpTPT56krmgl"
+      ],
+      "other": [
+        "https://hackerone.com/modules/contrib/google_tag/js/gtag.js?tip1e4",
+        "https://hackerone.com/modules/contrib/google_tag/js/gtm.js?tip1e4",
+        "https://hackerone.com/#main-content",
+        "https://hackerone.com/product/h1-remediation",
+        "https://hackerone.com/leaderboard",
+        "https://hackerone.com/contact/security-incident",
+        "https://hackerone.com/",
+        "https://hackerone.com/platform",
+        "https://hackerone.com/platform/hai",
+        "https://hackerone.com/product/bug-bounty-platform",
+        "https://hackerone.com/product/pentest",
+        "https://hackerone.com/product/h1-continuous-testing",
+        "https://hackerone.com/product/ai-red-teaming",
+        "https://hackerone.com/product/h1-validation",
+        "https://hackerone.com/solutions",
+        "https://hackerone.com/solutions/adversarial-exposure-validation",
+        "https://hackerone.com/solutions/ai",
+        "https://hackerone.com/solutions/application-security-testing-software",
+        "https://hackerone.com/solutions/cloud-security-solution",
+        "https://hackerone.com/solutions/continuous-security-testing",
+        "https://hackerone.com/solutions/continuous-vulnerability-testing",
+        "https://hackerone.com/solutions/crowdsourced-security",
+        "https://hackerone.com/solutions/continuous-threat-exposure-management",
+        "https://hackerone.com/solutions/vulnerability-management-system",
+        "https://hackerone.com/solutions/web3",
+        "https://hackerone.com/solutions/automotive-and-transportation",
+        "https://hackerone.com/solutions/crypto-blockchain",
+        "https://hackerone.com/solutions/financial-services",
+        "https://hackerone.com/solutions/public-sector",
+        "https://hackerone.com/solutions/healthcare",
+        "https://hackerone.com/solutions/retail-ecommerce",
+        "https://hackerone.com/solutions/retail-hospitality-and-entertainment",
+        "https://hackerone.com/solutions/united-states-federal",
+        "https://hackerone.com/solutions/uk-government",
+        "https://hackerone.com/report/future-of-ai",
+        "https://hackerone.com/partners",
+        "https://hackerone.com/partners/technology-alliance-program",
+        "https://hackerone.com/partners/aws",
+        "https://hackerone.com/partners/find-a-partner",
+        "https://hackerone.com/partners/integrations",
+        "https://hackerone.com/hackers",
+        "https://hackerone.com/hackers/how-to-start-hacking",
+        "https://hackerone.com/hackers/ambassador-world-cup",
+        "https://hackerone.com/opportunities/all",
+        "https://hackerone.com/report/hacker-powered-security",
+        "https://hackerone.com/events",
+        "https://hackerone.com/blog",
+        "https://hackerone.com/vulnerability-disclosure-policy-map",
+        "https://hackerone.com/company",
+        "https://hackerone.com/company/leadership",
+        "https://hackerone.com/careers",
+        "https://hackerone.com/trust",
+        "https://hackerone.com/company/public-policy",
+        "https://hackerone.com/company/newsroom",
+        "https://hackerone.com/contact",
+        "https://hackerone.com/#wistia_z2movi2qn0",
+        "https://hackerone.com/knowledge-center/what-application-security-concepts-tools-best-practices",
+        "https://hackerone.com/knowledge-center/what-is-penetration-testing-as-a-service",
+        "https://hackerone.com/knowledge-center/what-hacking-black-hat-white-hat-blue-hat-and-more",
+        "https://hackerone.com/knowledge-center/16-types-cybersecurity-attacks-and-how-prevent-them",
+        "https://hackerone.com/resources",
+        "https://hackerone.com/policies",
+        "https://hackerone.com/terms",
+        "https://hackerone.com/policies/privacy",
+        "https://hackerone.com/security?type=team",
+        "https://hackerone.com/core/assets/vendor/jquery/jquery.min.js?v=4.0.0"
+      ]
+    },
+    "parameterized_endpoints": [],
+    "forms": []
+  },
+  "notes": [
+    "Passive-only checks. No exploit payloads were sent."
+  ]
+}
