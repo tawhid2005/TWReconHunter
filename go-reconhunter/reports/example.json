@@ -1,0 +1,44 @@
+{
+  "target": "https://example.com",
+  "status_code": 200,
+  "headers": {
+    "Age": "1836",
+    "Allow": "GET, HEAD",
+    "Cf-Cache-Status": "HIT",
+    "Cf-Ray": "a226706e5aed8dfd-DAC",
+    "Content-Type": "text/html",
+    "Date": "Tue, 28 Jul 2026 19:55:02 GMT",
+    "Last-Modified": "Tue, 21 Jul 2026 07:16:00 GMT",
+    "Server": "cloudflare"
+  },
+  "body_snippet": "Status 200 from https://example.com",
+  "subdomains": null,
+  "findings": [
+    {
+      "severity": "medium",
+      "title": "Missing strict-transport-security",
+      "details": "The response does not include strict-transport-security.",
+      "source": "response header"
+    },
+    {
+      "severity": "medium",
+      "title": "Missing content-security-policy",
+      "details": "The response does not include content-security-policy.",
+      "source": "response header"
+    },
+    {
+      "severity": "medium",
+      "title": "Missing x-frame-options",
+      "details": "The response does not include x-frame-options.",
+      "source": "response header"
+    }
+  ],
+  "endpoints": [
+    {
+      "url": "https://example.com",
+      "category": "general"
+    }
+  ],
+  "triage": [],
+  "reports": []
+}
